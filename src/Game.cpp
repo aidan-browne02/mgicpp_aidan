@@ -10,7 +10,10 @@ Game::Game(sf::RenderWindow& game_window)
 
 Game::~Game()
 {
-
+	delete[] animals;
+	delete[] passports;
+	delete character;
+	delete passport;
 }
 
 bool Game::init()
@@ -66,7 +69,7 @@ bool Game::init()
 	score_text.setFillColor(sf::Color(255, 255, 255, 128));
 	score_text.setPosition(
 		window.getSize().x - title_text.getGlobalBounds().width / 2,
-		25);
+		50);
 
 	//menu
 	in_menu = true;
@@ -75,15 +78,40 @@ bool Game::init()
 	//random inits
 	speed = 400;
 	score = 0;
-	
 
-	
-  return true;
+	//animal and passport inits
+	if (!animals[0].loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/moose.png"))
+	{
+		std::cout << "animal[0] texture did not load \n";
+	}
+	if (!animals[1].loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/elephant.png"))
+	{
+		std::cout << "animal[1] texture did not load \n";
+	}
+	if (!animals[2].loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/penguin.png"))
+	{
+		std::cout << "animal[2] texture did not load \n";
+	}
+	if (!passports[0].loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/moose passport.png"))
+	{
+		std::cout << "passport[0] texture did not load \n";
+	}
+	if (!passports[1].loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/elephant passport.png"))
+	{
+		std::cout << "passport[1] texture did not load \n";
+	}
+	if (!passports[2].loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/penguin passport.png"))
+	{
+		std::cout << "passport[2] texture did not load \n";
+	}
+
+	return true;
 }
 
 void Game::update(float dt)
 {
 	//bird movement
+	/*
 	if ((bird.getPosition().x > (window.getSize().x - bird.getGlobalBounds().width)) || (bird.getPosition().x < 0))
 	{
 		reverse = !reverse;
@@ -108,6 +136,7 @@ void Game::update(float dt)
 	//update score
 	std::string my_score = std::to_string(score);
 	score_text.setString(my_score);
+	*/
 }
 
 void Game::render()
@@ -121,8 +150,11 @@ void Game::render()
 	else
 	{
 		window.draw(background);
-		window.draw(bird);
-		window.draw(score_text);
+		//window.draw(*character);
+		//window.draw(*passport);
+		
+		//window.draw(bird);
+		//window.draw(score_text);
 	}
 }
 
@@ -131,6 +163,7 @@ void Game::mouseClicked(sf::Event event)
   //get the click position
   sf::Vector2i click = sf::Mouse::getPosition(window);
 
+  /*
   if (collisionCheck(click, bird))
   {
 	  //spawn 
@@ -139,6 +172,7 @@ void Game::mouseClicked(sf::Event event)
 	  //inc score
 	  score++;
   }
+  */
 }
 
 void Game::keyPressed(sf::Event event)
@@ -173,6 +207,13 @@ void Game::keyPressed(sf::Event event)
 		}
 
 	}
+	else
+	{
+		if (event.key.code == sf::Keyboard::A)
+		{
+			newAnimal();
+		}
+	}
 }
 
 bool Game::collisionCheck(sf::Vector2i click, sf::Sprite sprite)
@@ -189,7 +230,35 @@ bool Game::collisionCheck(sf::Vector2i click, sf::Sprite sprite)
 
 void Game::spawn()
 {
+	/*
 	bird.setPosition(rand() % 880, rand() % 520);
 	reverse = false;
+	*/
 }
 
+void Game::newAnimal()
+{
+	passport_accepted = false;
+	passport_rejected = false;
+
+	int animal_index = rand() % 3;
+	int passport_index = rand() % 3;
+
+	if (animal_index == passport_index)
+	{
+		should_accept = true;
+	}
+	else
+	{
+		should_accept = false;
+	}
+
+	character->setTexture(animals[animal_index], true);
+	character->setScale(1.8, 1.8);
+	character->setPosition(window.getSize().x / 12, window.getSize().y / 12);
+
+	passport->setTexture(passports[passport_index]);
+	passport->setScale(0.6, 0.6);
+	passport->setPosition(window.getSize().x / 2, window.getSize().y / 3);
+
+}

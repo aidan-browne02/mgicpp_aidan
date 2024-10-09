@@ -16,6 +16,7 @@ class Game
   void keyPressed(sf::Event event);
   bool collisionCheck(sf::Vector2i click, sf::Sprite sprite);
   void spawn();
+  void newAnimal();
   int score;
 
  private:
@@ -33,6 +34,15 @@ class Game
   bool play_selected;
   float speed;
   bool reverse;
+
+  sf::Sprite* character;
+  sf::Sprite* passport;
+  sf::Texture* animals = new sf::Texture[3];
+  sf::Texture* passports = new sf::Texture[3];
+  bool passport_accepted;
+  bool passport_rejected;
+  bool should_accept;
+
 };
 
 #endif // PLATFORMER_GAME_H
