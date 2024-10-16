@@ -12,11 +12,13 @@ class Game
   bool init();
   void update(float dt);
   void render();
-  void mouseClicked(sf::Event event);
+  void mouseButtonPressed(sf::Event event);
+  void mouseButtonReleased(sf::Event event);
   void keyPressed(sf::Event event);
   bool collisionCheck(sf::Vector2i click, sf::Sprite sprite);
   void spawn();
   void newAnimal();
+  void dragSprite(sf::Sprite* sprite);
   int score;
 
  private:
@@ -42,7 +44,11 @@ class Game
   bool passport_accepted;
   bool passport_rejected;
   bool should_accept;
-
+  sf::Sprite* dragged = nullptr;
+  sf::Sprite* accept_button;
+  sf::Sprite* reject_button;
+  sf::Texture* accept_bt;
+  sf::Texture* reject_bt;
 };
 
 #endif // PLATFORMER_GAME_H

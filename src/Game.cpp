@@ -14,6 +14,10 @@ Game::~Game()
 	delete[] passports;
 	delete character;
 	delete passport;
+	delete accept_button;
+	delete reject_button;
+	delete accept_bt;
+	delete reject_bt;
 }
 
 bool Game::init()
@@ -39,7 +43,7 @@ bool Game::init()
 	{
 		std::cout << "font did not load \n";
 	}
-	title_text.setString("Whack-a-mole");
+	title_text.setString("Passport Game");
 	title_text.setFont(font);
 	title_text.setCharacterSize(50);
 	title_text.setFillColor(sf::Color(255, 255, 255, 128));
@@ -105,6 +109,28 @@ bool Game::init()
 		std::cout << "passport[2] texture did not load \n";
 	}
 
+	character = new sf::Sprite;
+	passport = new sf::Sprite;
+
+	//accept/reject buttons init
+	accept_button = new sf::Sprite;
+	reject_button = new sf::Sprite;
+	accept_bt = new sf::Texture;
+	reject_bt = new sf::Texture;
+	if (!accept_bt->loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/accept button.png"))
+	{
+		std::cout << "accept button texture did not load \n";
+	}
+	if (!reject_bt->loadFromFile("../Data/Images/extra_images/Critter Crossing Customs/reject button.png"))
+	{
+		std::cout << "reject button texture did not load \n";
+	}
+	accept_button->setTexture(*accept_bt);
+	reject_button->setTexture(*reject_bt);
+	accept_button->setScale(0.7, 0.7);
+	accept_button->setPosition(20, window.getSize().y - 100);
+	reject_button->setScale(0.7, 0.7);
+	reject_button->setPosition(40 + reject_button->getGlobalBounds().width, window.getSize().y - 100);
 	return true;
 }
 
@@ -137,6 +163,8 @@ void Game::update(float dt)
 	std::string my_score = std::to_string(score);
 	score_text.setString(my_score);
 	*/
+	//drag sprite
+	dragSprite(dragged);
 }
 
 void Game::render()
@@ -150,29 +178,36 @@ void Game::render()
 	else
 	{
 		window.draw(background);
-		//window.draw(*character);
-		//window.draw(*passport);
-		
+		window.draw(*character);
+		window.draw(*passport);
+		window.draw(*accept_button);
+		window.draw(*reject_button);
 		//window.draw(bird);
 		//window.draw(score_text);
 	}
 }
 
-void Game::mouseClicked(sf::Event event)
+void Game::mouseButtonPressed(sf::Event event)
 {
-  //get the click position
-  sf::Vector2i click = sf::Mouse::getPosition(window);
+	if (event.mouseButton.button == sf::Mouse::Left)
+	{
+		sf::Vector2i click = sf::Mouse::getPosition(window);
+		sf::Vector2f clickf = static_cast<sf::Vector2f>(click);
 
-  /*
-  if (collisionCheck(click, bird))
-  {
-	  //spawn 
-	  spawn();
+		if (passport->getGlobalBounds().contains(clickf))
+		{
+			dragged = passport;
+		}
+	}
+}
 
-	  //inc score
-	  score++;
-  }
-  */
+
+void Game::mouseButtonReleased(sf::Event event)
+{
+	if (event.mouseButton.button == sf::Mouse::Left)
+	{
+		dragged = nullptr;
+	}
 }
 
 void Game::keyPressed(sf::Event event)
@@ -243,7 +278,7 @@ void Game::newAnimal()
 
 	int animal_index = rand() % 3;
 	int passport_index = rand() % 3;
-
+	
 	if (animal_index == passport_index)
 	{
 		should_accept = true;
@@ -257,8 +292,22 @@ void Game::newAnimal()
 	character->setScale(1.8, 1.8);
 	character->setPosition(window.getSize().x / 12, window.getSize().y / 12);
 
-	passport->setTexture(passports[passport_index]);
+	passport->setTexture(passports[0]);
 	passport->setScale(0.6, 0.6);
 	passport->setPosition(window.getSize().x / 2, window.getSize().y / 3);
 
+}
+
+void Game::dragSprite(sf::Sprite* sprite)
+{
+	if (sprite != nullptr)
+	{
+		sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
+		sf::Vector2f mouse_positionf = static_cast<sf::Vector2f>(mouse_position);
+
+		sf::Vector2f drag_offset(sprite->getGlobalBounds().width / 2, sprite->getGlobalBounds().height / 2);
+		
+		sf::Vector2f drag_position = mouse_positionf - drag_offset;
+		sprite->setPosition(drag_position.x, drag_position.y);
+	}	
 }
